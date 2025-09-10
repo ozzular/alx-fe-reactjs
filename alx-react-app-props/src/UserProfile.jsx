@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import UserContext from './UserContext';
 
 function UserProfile() {
-  // Directly access userData from context - no props needed!
   const userData = useContext(UserContext);
 
   return (
