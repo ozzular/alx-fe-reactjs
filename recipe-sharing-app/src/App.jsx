@@ -20,9 +20,9 @@ function App() {
           <p>Share and discover amazing recipes!</p>
 
           <nav style={{
-            marginTop: '20px',
+            marginTop: '2rem',
             display: 'flex',
-            gap: '20px',
+            gap: '1rem',
             justifyContent: 'center',
             flexWrap: 'wrap'
           }}>
@@ -30,25 +30,23 @@ function App() {
               to="/"
               style={{
                 color: 'white',
-                textDecoration: 'none',
-                padding: '8px 16px',
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                borderRadius: '4px'
+                padding: '12px 24px',
+                fontSize: '16px',
+                fontWeight: '500'
               }}
             >
-              Home
+              🏠 Home
             </Link>
             <Link
               to="/favorites"
               style={{
                 color: 'white',
-                textDecoration: 'none',
-                padding: '8px 16px',
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                borderRadius: '4px'
+                padding: '12px 24px',
+                fontSize: '16px',
+                fontWeight: '500'
               }}
             >
-              My Favorites
+              ❤️ My Favorites
             </Link>
           </nav>
         </header>

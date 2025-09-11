@@ -14,124 +14,308 @@ const RecommendationsList = () => {
   }, [favorites.length, generateRecommendations]);
 
   return (
-    <div>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
+    <div style={{ marginBottom: '3rem' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '20px'
+        marginBottom: '2rem',
+        flexWrap: 'wrap',
+        gap: '1rem'
       }}>
-        <h2>Recommended for You</h2>
+        <div>
+          <h2 style={{
+            fontSize: '2rem',
+            fontWeight: '700',
+            color: 'var(--neutral-800)',
+            margin: '0 0 0.5rem 0',
+            fontFamily: 'var(--font-display)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            ✨ Recommended for You
+          </h2>
+          <p style={{
+            color: 'var(--neutral-600)',
+            fontSize: '1rem',
+            margin: 0
+          }}>
+            Discover recipes tailored to your taste
+          </p>
+        </div>
         <button
           onClick={generateRecommendations}
           style={{
-            padding: '8px 16px',
-            backgroundColor: '#28a745',
+            padding: '0.75rem 1.5rem',
+            background: 'var(--gradient-primary)',
             color: 'white',
             border: 'none',
-            borderRadius: '4px',
+            borderRadius: 'var(--radius-lg)',
             cursor: 'pointer',
-            fontSize: '14px'
+            fontSize: '0.95rem',
+            fontWeight: '500',
+            transition: 'all var(--transition-fast)',
+            boxShadow: 'var(--shadow-sm)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.transform = 'translateY(-1px)';
+            e.target.style.boxShadow = 'var(--shadow-md)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = 'var(--shadow-sm)';
           }}
         >
-          Refresh Recommendations
+          🔄 Refresh
         </button>
       </div>
       
       {recommendations.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#666', fontSize: '16px' }}>
-          {favorites.length === 0 
-            ? 'Add some recipes to your favorites to get personalized recommendations!'
-            : 'No recommendations available right now. Try refreshing or add more favorites!'
-          }
-        </p>
+        <div style={{
+          textAlign: 'center',
+          padding: '3rem 2rem',
+          background: 'white',
+          borderRadius: 'var(--radius-2xl)',
+          boxShadow: 'var(--shadow-md)',
+          border: '1px solid var(--neutral-200)'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
+            {favorites.length === 0 ? '🤔' : '🔄'}
+          </div>
+          <h3 style={{
+            color: 'var(--neutral-700)',
+            fontSize: '1.5rem',
+            marginBottom: '0.5rem',
+            fontWeight: '600'
+          }}>
+            {favorites.length === 0 ? 'No recommendations yet' : 'No recommendations available'}
+          </h3>
+          <p style={{
+            color: 'var(--neutral-500)',
+            fontSize: '1rem',
+            lineHeight: '1.6'
+          }}>
+            {favorites.length === 0
+              ? 'Add some recipes to your favorites to get personalized recommendations!'
+              : 'No recommendations available right now. Try refreshing or add more favorites!'
+            }
+          </p>
+        </div>
       ) : (
         <div>
-          <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>
-            Based on your {favorites.length} favorite recipe{favorites.length !== 1 ? 's' : ''}
-          </p>
-          {recommendations.map(recipe => (
-            <div key={recipe.id} style={{ 
-              border: '1px solid #ddd', 
-              margin: '15px 0', 
-              padding: '20px', 
-              borderRadius: '8px',
-              backgroundColor: '#f0f8ff',
-              position: 'relative'
+          <div style={{
+            background: 'linear-gradient(135deg, var(--secondary-50) 0%, var(--primary-50) 100%)',
+            padding: '1rem 1.5rem',
+            borderRadius: 'var(--radius-lg)',
+            marginBottom: '2rem',
+            border: '1px solid var(--primary-200)'
+          }}>
+            <p style={{
+              color: 'var(--neutral-700)',
+              fontSize: '1rem',
+              margin: 0,
+              fontWeight: '500',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
             }}>
+              🎯 Based on your {favorites.length} favorite recipe{favorites.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+            gap: '2rem'
+          }}>
+            {recommendations.map(recipe => (
+            <div key={recipe.id} style={{
+              background: 'linear-gradient(145deg, #f0f9ff 0%, #ffffff 100%)',
+              borderRadius: 'var(--radius-xl)',
+              boxShadow: 'var(--shadow-md)',
+              overflow: 'hidden',
+              transition: 'all var(--transition-normal)',
+              position: 'relative',
+              border: '2px solid var(--secondary-200)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-xl)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+            }}>
+
+              {/* Recommendation Badge */}
               <div style={{
                 position: 'absolute',
-                top: '10px',
-                right: '10px',
-                backgroundColor: '#007bff',
+                top: '1rem',
+                left: '1rem',
+                background: 'var(--secondary-500)',
                 color: 'white',
-                padding: '4px 8px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: 'bold'
+                padding: '0.5rem 1rem',
+                borderRadius: 'var(--radius-lg)',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                zIndex: 2,
+                boxShadow: 'var(--shadow-md)'
               }}>
-                Recommended
+                ✨ Recommended
               </div>
-              
-              <h3 style={{ 
-                margin: '0 0 10px 0', 
-                color: '#333',
-                paddingRight: '120px'
+
+              {/* Recipe Image Placeholder */}
+              <div style={{
+                height: '200px',
+                background: 'linear-gradient(135deg, var(--secondary-200) 0%, var(--secondary-300) 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '4rem',
+                position: 'relative'
               }}>
-                <Link 
-                  to={`/recipe/${recipe.id}`}
-                  style={{
-                    textDecoration: 'none',
-                    color: '#007bff'
-                  }}
-                >
-                  {recipe.title}
-                </Link>
-              </h3>
-              
-              <p style={{ 
-                margin: '0 0 15px 0', 
-                color: '#666',
-                lineHeight: '1.5'
-              }}>
-                {recipe.description.length > 150 
-                  ? `${recipe.description.substring(0, 150)}...` 
-                  : recipe.description
-                }
-              </p>
-              
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <Link 
-                  to={`/recipe/${recipe.id}`}
-                  style={{
-                    display: 'inline-block',
-                    padding: '8px 16px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '4px',
-                    fontSize: '14px'
-                  }}
-                >
-                  View Recipe
-                </Link>
-                
+                🍽️
                 {!favorites.includes(recipe.id) && (
                   <button
-                    onClick={() => addFavorite(recipe.id)}
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: '#ff6b6b',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '14px'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addFavorite(recipe.id);
                     }}
+                    style={{
+                      position: 'absolute',
+                      top: '1rem',
+                      right: '1rem',
+                      background: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '48px',
+                      height: '48px',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                      color: 'var(--neutral-400)',
+                      boxShadow: 'var(--shadow-md)',
+                      transition: 'all var(--transition-fast)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'scale(1.1)';
+                      e.target.style.boxShadow = 'var(--shadow-lg)';
+                      e.target.style.color = 'var(--accent-red)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'scale(1)';
+                      e.target.style.boxShadow = 'var(--shadow-md)';
+                      e.target.style.color = 'var(--neutral-400)';
+                    }}
+                    title="Add to favorites"
                   >
-                    ♡ Add to Favorites
+                    🤍
                   </button>
                 )}
+              </div>
+
+              {/* Recipe Content */}
+              <div style={{ padding: '1.5rem' }}>
+                <h3 style={{
+                  margin: '0 0 0.75rem 0',
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: 'var(--neutral-800)',
+                  fontFamily: 'var(--font-display)',
+                  lineHeight: '1.3'
+                }}>
+                  <Link
+                    to={`/recipe/${recipe.id}`}
+                    style={{
+                      textDecoration: 'none',
+                      color: 'inherit',
+                      transition: 'color var(--transition-fast)'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = 'var(--secondary-600)'}
+                    onMouseLeave={(e) => e.target.style.color = 'var(--neutral-800)'}
+                  >
+                    {recipe.title}
+                  </Link>
+                </h3>
+
+                <p style={{
+                  margin: '0 0 1.5rem 0',
+                  color: 'var(--neutral-600)',
+                  lineHeight: '1.6',
+                  fontSize: '0.95rem'
+                }}>
+                  {recipe.description.length > 120
+                    ? `${recipe.description.substring(0, 120)}...`
+                    : recipe.description
+                  }
+                </p>
+
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Link
+                    to={`/recipe/${recipe.id}`}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      padding: '0.75rem 1.5rem',
+                      background: 'linear-gradient(135deg, var(--secondary-500) 0%, var(--secondary-600) 100%)',
+                      color: 'white',
+                      textDecoration: 'none',
+                      borderRadius: 'var(--radius-lg)',
+                      fontSize: '0.95rem',
+                      fontWeight: '500',
+                      transition: 'all var(--transition-fast)',
+                      boxShadow: 'var(--shadow-sm)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'translateY(-1px)';
+                      e.target.style.boxShadow = 'var(--shadow-md)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = 'var(--shadow-sm)';
+                    }}
+                  >
+                    👀 View Recipe
+                  </Link>
+
+                  {!favorites.includes(recipe.id) && (
+                    <button
+                      onClick={() => addFavorite(recipe.id)}
+                      style={{
+                        padding: '0.75rem 1.5rem',
+                        background: 'linear-gradient(135deg, var(--accent-red) 0%, #dc2626 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 'var(--radius-lg)',
+                        cursor: 'pointer',
+                        fontSize: '0.95rem',
+                        fontWeight: '500',
+                        transition: 'all var(--transition-fast)',
+                        boxShadow: 'var(--shadow-sm)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = 'translateY(-1px)';
+                        e.target.style.boxShadow = 'var(--shadow-md)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = 'translateY(0)';
+                        e.target.style.boxShadow = 'var(--shadow-sm)';
+                      }}
+                    >
+                      ❤️ Add to Favorites
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
