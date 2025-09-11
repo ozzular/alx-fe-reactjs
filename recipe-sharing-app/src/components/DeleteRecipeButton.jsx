@@ -1,21 +1,28 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useRecipeStore from './recipeStore';
 
 const DeleteRecipeButton = ({ recipeId, recipeName, onSuccess }) => {
+  const navigate = useNavigate();
   const deleteRecipe = useRecipeStore(state => state.deleteRecipe);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    
+
     try {
       deleteRecipe(recipeId);
-      
+
       // Simulate a brief delay for better UX
       await new Promise(resolve => setTimeout(resolve, 300));
-      
-      onSuccess();
+
+      // Navigate back to home page after successful deletion
+      navigate('/');
+
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error('Error deleting recipe:', error);
     } finally {

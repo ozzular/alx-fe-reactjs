@@ -1,16 +1,19 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import useRecipeStore from './recipeStore';
+import { useRecipeStore } from './recipeStore';
 import EditRecipeForm from './EditRecipeForm';
 import DeleteRecipeButton from './DeleteRecipeButton';
 import { useState } from 'react';
 
-const RecipeDetails = () => {
-  const { recipeId } = useParams();
+const RecipeDetails = ({ recipeId }) => {
+  const { recipeId: paramRecipeId } = useParams();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  
+
+  // Use recipeId prop if provided, otherwise use URL parameter
+  const actualRecipeId = recipeId || parseInt(paramRecipeId);
+
   const recipe = useRecipeStore(state =>
-    state.recipes.find(recipe => recipe.id === parseInt(recipeId))
+    state.recipes.find(recipe => recipe.id === actualRecipeId)
   );
 
   if (!recipe) {
@@ -37,10 +40,6 @@ const RecipeDetails = () => {
 
   const handleEditSuccess = () => {
     setIsEditing(false);
-  };
-
-  const handleDeleteSuccess = () => {
-    navigate('/');
   };
 
   return (
@@ -104,10 +103,9 @@ const RecipeDetails = () => {
                 Edit Recipe
               </button>
               
-              <DeleteRecipeButton 
+              <DeleteRecipeButton
                 recipeId={recipe.id}
                 recipeName={recipe.title}
-                onSuccess={handleDeleteSuccess}
               />
             </div>
           </div>
