@@ -17,37 +17,15 @@ function App() {
               Recipe Sharing App
             </Link>
           </h1>
-          <p>Share and discover amazing recipes!</p>
-
-          <nav style={{
-            marginTop: '2rem',
-            display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
-            flexWrap: 'wrap'
-          }}>
-            <Link
-              to="/"
-              style={{
-                color: 'white',
-                padding: '12px 24px',
-                fontSize: '16px',
-                fontWeight: '500'
-              }}
-            >
-              🏠 Home
-            </Link>
-            <Link
-              to="/favorites"
-              style={{
-                color: 'white',
-                padding: '12px 24px',
-                fontSize: '16px',
-                fontWeight: '500'
-              }}
-            >
-              ❤️ My Favorites
-            </Link>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/favorites">My Favorites</Link>
+              </li>
+            </ul>
           </nav>
         </header>
 

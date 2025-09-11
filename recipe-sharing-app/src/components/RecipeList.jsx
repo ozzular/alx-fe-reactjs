@@ -22,7 +22,7 @@ const RecipeList = () => {
         textAlign: 'center',
         fontFamily: 'var(--font-display)'
       }}>
-        {searchTerm ? `🔍 Search Results (${displayRecipes.length})` : '🍽️ Recipe Collection'}
+        {searchTerm ? `Search Results (${displayRecipes.length})` : 'Recipe Collection'}
       </h2>
       {displayRecipes.length === 0 ? (
         <div style={{
@@ -33,7 +33,18 @@ const RecipeList = () => {
           boxShadow: 'var(--shadow-md)',
           margin: '2rem 0'
         }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>
+          <div style={{
+            width: '80px',
+            height: '80px',
+            backgroundColor: 'var(--gray-100)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto var(--space-6) auto',
+            fontSize: '2rem',
+            color: 'var(--gray-400)'
+          }}>
             {searchTerm ? '🔍' : '📝'}
           </div>
           <h3 style={{
@@ -86,14 +97,27 @@ const RecipeList = () => {
               {/* Recipe Image Placeholder */}
               <div style={{
                 height: '200px',
-                background: 'var(--gradient-warm)',
+                background: 'linear-gradient(135deg, var(--primary-100) 0%, var(--primary-50) 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '4rem',
-                position: 'relative'
+                position: 'relative',
+                borderBottom: '1px solid var(--gray-200)'
               }}>
-                🍽️
+                <div style={{
+                  width: '60px',
+                  height: '60px',
+                  backgroundColor: 'var(--primary)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '1.5rem',
+                  fontWeight: '600'
+                }}>
+                  {recipe.title.charAt(0).toUpperCase()}
+                </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -129,7 +153,9 @@ const RecipeList = () => {
                   }}
                   title={favorites.includes(recipe.id) ? 'Remove from favorites' : 'Add to favorites'}
                 >
-                  {favorites.includes(recipe.id) ? '❤️' : '🤍'}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill={favorites.includes(recipe.id) ? 'var(--accent-error)' : 'none'} stroke={favorites.includes(recipe.id) ? 'var(--accent-error)' : 'var(--gray-400)'} strokeWidth="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
                 </button>
               </div>
 
@@ -194,7 +220,7 @@ const RecipeList = () => {
                     e.target.style.boxShadow = 'var(--shadow-sm)';
                   }}
                 >
-                  👀 View Recipe
+                  View Recipe
                 </Link>
               </div>
             </div>

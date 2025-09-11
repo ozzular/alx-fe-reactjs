@@ -21,15 +21,17 @@ const SearchBar = () => {
       }}>
         <div style={{
           position: 'absolute',
-          left: '1.25rem',
+          left: '1rem',
           top: '50%',
           transform: 'translateY(-50%)',
-          fontSize: '1.25rem',
-          color: 'var(--neutral-400)',
+          color: 'var(--gray-400)',
           pointerEvents: 'none',
           zIndex: 1
         }}>
-          🔍
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
         </div>
 
         <input
@@ -112,12 +114,12 @@ const SearchBar = () => {
           display: 'inline-block'
         }}>
           <span style={{
-            color: 'var(--neutral-600)',
-            fontSize: '0.95rem',
+            color: 'var(--gray-600)',
+            fontSize: 'var(--text-sm)',
             fontWeight: '500'
           }}>
-            🔍 Searching for: <span style={{
-              color: 'var(--primary-600)',
+            Searching for: <span style={{
+              color: 'var(--primary)',
               fontWeight: '600'
             }}>"{searchTerm}"</span>
           </span>

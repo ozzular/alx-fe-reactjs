@@ -29,20 +29,34 @@ const AddRecipeForm = () => {
       maxWidth: '600px',
       margin: '0 auto 3rem auto'
     }}>
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👨‍🍳</div>
+      <div style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>
+        <div style={{
+          width: '80px',
+          height: '80px',
+          backgroundColor: 'var(--primary-100)',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto var(--space-4) auto',
+          color: 'var(--primary)'
+        }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2v20M2 12h20"></path>
+          </svg>
+        </div>
         <h2 style={{
-          fontSize: '2rem',
+          fontSize: 'var(--text-2xl)',
           fontWeight: '700',
-          color: 'var(--neutral-800)',
-          margin: '0 0 0.5rem 0',
-          fontFamily: 'var(--font-display)'
+          color: 'var(--gray-800)',
+          margin: '0 0 var(--space-2) 0',
+          fontFamily: 'var(--font-family-display)'
         }}>
           Share Your Recipe
         </h2>
         <p style={{
-          color: 'var(--neutral-600)',
-          fontSize: '1.1rem',
+          color: 'var(--gray-600)',
+          fontSize: 'var(--text-base)',
           margin: 0
         }}>
           Add a delicious recipe to share with the community
@@ -161,7 +175,7 @@ const AddRecipeForm = () => {
             e.target.style.boxShadow = 'var(--shadow-md)';
           }}
         >
-          ✨ Add Recipe
+          Add Recipe
         </button>
       </form>
     </div>
