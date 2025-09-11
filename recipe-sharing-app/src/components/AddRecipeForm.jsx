@@ -10,10 +10,9 @@ const AddRecipeForm = () => {
     event.preventDefault();
     
     if (title.trim() && description.trim()) {
-      addRecipe({ 
-        id: Date.now(), 
-        title: title.trim(), 
-        description: description.trim() 
+      addRecipe({
+        title: title.trim(),
+        description: description.trim()
       });
       setTitle('');
       setDescription('');
