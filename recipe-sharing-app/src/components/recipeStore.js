@@ -4,6 +4,8 @@ const useRecipeStore = create((set, get) => ({
   recipes: [],
   searchTerm: '',
   filteredRecipes: [],
+  favorites: [],
+  recommendations: [],
 
   // Search and filtering
   setSearchTerm: (term) => set((state) => {
@@ -84,7 +86,63 @@ const useRecipeStore = create((set, get) => ({
   getRecipeById: (recipeId) => {
     const state = get();
     return state.recipes.find(recipe => recipe.id === recipeId);
-  }
+  },
+
+  // Favorites functionality
+  addFavorite: (recipeId) => set(state => ({
+    favorites: [...state.favorites, recipeId]
+  })),
+
+  removeFavorite: (recipeId) => set(state => ({
+    favorites: state.favorites.filter(id => id !== recipeId)
+  })),
+
+  // Helper function to check if a recipe is favorited
+  isFavorite: (recipeId) => {
+    const state = get();
+    return state.favorites.includes(recipeId);
+  },
+
+  // Recommendations functionality
+  generateRecommendations: () => set(state => {
+    // Enhanced recommendation algorithm
+    if (state.favorites.length === 0) {
+      // If no favorites, recommend random recipes
+      const shuffled = [...state.recipes].sort(() => Math.random() - 0.5);
+      return { recommendations: shuffled.slice(0, 3) };
+    }
+
+    // Get favorite recipes to analyze
+    const favoriteRecipes = state.favorites.map(id =>
+      state.recipes.find(recipe => recipe.id === id)
+    ).filter(recipe => recipe !== undefined);
+
+    // Simple content-based filtering: recommend recipes with similar words
+    const recommendations = state.recipes.filter(recipe => {
+      // Don't recommend recipes that are already favorites
+      if (state.favorites.includes(recipe.id)) return false;
+
+      // Check if recipe shares keywords with favorites
+      const recipeWords = (recipe.title + ' ' + recipe.description).toLowerCase().split(/\s+/);
+      const favoriteWords = favoriteRecipes.flatMap(fav =>
+        (fav.title + ' ' + fav.description).toLowerCase().split(/\s+/)
+      );
+
+      // Count common words (excluding common stop words)
+      const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'];
+      const commonWords = recipeWords.filter(word =>
+        word.length > 3 &&
+        !stopWords.includes(word) &&
+        favoriteWords.includes(word)
+      );
+
+      return commonWords.length > 0;
+    });
+
+    // Shuffle and limit recommendations
+    const shuffled = recommendations.sort(() => Math.random() - 0.5);
+    return { recommendations: shuffled.slice(0, 4) };
+  })
 }));
 
 export default useRecipeStore;

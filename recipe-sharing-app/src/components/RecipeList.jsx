@@ -5,6 +5,9 @@ const RecipeList = () => {
   const recipes = useRecipeStore(state => state.recipes);
   const filteredRecipes = useRecipeStore(state => state.filteredRecipes);
   const searchTerm = useRecipeStore(state => state.searchTerm);
+  const favorites = useRecipeStore(state => state.favorites);
+  const addFavorite = useRecipeStore(state => state.addFavorite);
+  const removeFavorite = useRecipeStore(state => state.removeFavorite);
 
   // Use filtered recipes if there's a search term, otherwise show all recipes
   const displayRecipes = searchTerm ? filteredRecipes : recipes;
@@ -30,11 +33,34 @@ const RecipeList = () => {
               padding: '20px',
               borderRadius: '8px',
               backgroundColor: '#f9f9f9',
-              transition: 'box-shadow 0.2s ease'
+              transition: 'box-shadow 0.2s ease',
+              position: 'relative'
             }}>
+              <button
+                onClick={() => favorites.includes(recipe.id)
+                  ? removeFavorite(recipe.id)
+                  : addFavorite(recipe.id)
+                }
+                style={{
+                  position: 'absolute',
+                  top: '15px',
+                  right: '15px',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  color: favorites.includes(recipe.id) ? '#ff6b6b' : '#ccc',
+                  padding: '5px'
+                }}
+                title={favorites.includes(recipe.id) ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                {favorites.includes(recipe.id) ? '♥' : '♡'}
+              </button>
+
               <h3 style={{
                 margin: '0 0 10px 0',
-                color: '#333'
+                color: '#333',
+                paddingRight: '40px'
               }}>
                 <Link
                   to={`/recipe/${recipe.id}`}

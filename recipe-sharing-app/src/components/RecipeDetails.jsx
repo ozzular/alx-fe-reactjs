@@ -15,6 +15,9 @@ const RecipeDetails = ({ recipeId }) => {
   const recipe = useRecipeStore(state =>
     state.recipes.find(recipe => recipe.id === actualRecipeId)
   );
+  const favorites = useRecipeStore(state => state.favorites);
+  const addFavorite = useRecipeStore(state => state.addFavorite);
+  const removeFavorite = useRecipeStore(state => state.removeFavorite);
 
   if (!recipe) {
     return (
@@ -83,12 +86,29 @@ const RecipeDetails = ({ recipeId }) => {
               {recipe.description}
             </p>
             
-            <div style={{ 
-              marginTop: '20px', 
-              display: 'flex', 
+            <div style={{
+              marginTop: '20px',
+              display: 'flex',
               gap: '10px',
               flexWrap: 'wrap'
             }}>
+              <button
+                onClick={() => favorites.includes(recipe.id)
+                  ? removeFavorite(recipe.id)
+                  : addFavorite(recipe.id)
+                }
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: favorites.includes(recipe.id) ? '#ff6b6b' : '#ffc107',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                {favorites.includes(recipe.id) ? '♥ Remove from Favorites' : '♡ Add to Favorites'}
+              </button>
+
               <button
                 onClick={() => setIsEditing(true)}
                 style={{
@@ -102,7 +122,7 @@ const RecipeDetails = ({ recipeId }) => {
               >
                 Edit Recipe
               </button>
-              
+
               <DeleteRecipeButton
                 recipeId={recipe.id}
                 recipeName={recipe.title}
