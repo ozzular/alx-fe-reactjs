@@ -36,6 +36,42 @@ export const fetchUserData = async (username) => {
  * @param {number} searchParams.page - Page number for pagination
  * @returns {Promise} - Promise that resolves to search results
  */
+/**
+ * Enrich user data by fetching detailed information
+ * @param {Array} users - Array of basic user objects from search
+ * @returns {Promise<Array>} - Promise that resolves to enriched user data
+ */
+export const enrichUserData = async (users) => {
+  try {
+    const enrichedUsers = await Promise.all(
+      users.map(async (user) => {
+        try {
+          const detailedUser = await fetchUserData(user.login);
+          return {
+            ...user,
+            name: detailedUser.name,
+            bio: detailedUser.bio,
+            location: detailedUser.location,
+            public_repos: detailedUser.public_repos,
+            followers: detailedUser.followers,
+            following: detailedUser.following,
+            company: detailedUser.company,
+            blog: detailedUser.blog,
+            created_at: detailedUser.created_at
+          };
+        } catch (error) {
+          // If individual user fetch fails, return original user data
+          return user;
+        }
+      })
+    );
+    return enrichedUsers;
+  } catch (error) {
+    // If enrichment fails, return original users
+    return users;
+  }
+};
+
 export const searchUsers = async ({ username, location, minRepos, page = 1 }) => {
   try {
     let query = '';
@@ -66,7 +102,13 @@ export const searchUsers = async ({ username, location, minRepos, page = 1 }) =>
       timeout: 10000, // 10 second timeout
     });
 
-    return response.data;
+    // Enrich the search results with detailed user data
+    const enrichedItems = await enrichUserData(response.data.items);
+
+    return {
+      ...response.data,
+      items: enrichedItems
+    };
   } catch (error) {
     if (error.response && error.response.status === 422) {
       throw new Error('Invalid search query');

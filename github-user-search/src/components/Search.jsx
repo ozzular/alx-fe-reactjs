@@ -25,7 +25,7 @@ const Search = () => {
 
   const handleBasicSearch = async (e) => {
     e.preventDefault();
-
+    
     if (!searchParams.username.trim()) {
       setError('Please enter a username');
       return;
@@ -48,7 +48,7 @@ const Search = () => {
 
   const handleAdvancedSearch = async (e) => {
     e.preventDefault();
-
+    
     if (!searchParams.username.trim() && !searchParams.location.trim()) {
       setError('Please enter a username or location');
       return;
@@ -67,21 +67,8 @@ const Search = () => {
         minRepos: searchParams.minRepos ? parseInt(searchParams.minRepos) : null,
         page: 1
       });
-
-      // Enrich each result with detailed user info (bio, location, public_repos)
-      const details = await Promise.all(
-        (data.items || []).map((u) =>
-          fetchUserData(u.login).catch(() => null)
-        )
-      );
-
-      const enriched = {
-        ...data,
-        items: (data.items || []).map((u, i) => ({ ...u, ...(details[i] || {}) })),
-      };
-
-      setSearchResults(enriched);
-    } catch {
+      setSearchResults(data);
+    } catch (err) {
       setError('Looks like we cant find any users matching your criteria');
     } finally {
       setLoading(false);
@@ -99,23 +86,13 @@ const Search = () => {
         minRepos: searchParams.minRepos ? parseInt(searchParams.minRepos) : null,
         page: currentPage + 1
       });
-
-      const details = await Promise.all(
-        (data.items || []).map((u) =>
-          fetchUserData(u.login).catch(() => null)
-        )
-      );
-      const enrichedItems = (data.items || []).map((u, i) => ({
-        ...u,
-        ...(details[i] || {}),
-      }));
-
+      
       setSearchResults(prev => ({
         ...data,
-        items: [...prev.items, ...enrichedItems]
+        items: [...prev.items, ...data.items]
       }));
       setCurrentPage(prev => prev + 1);
-    } catch {
+    } catch (err) {
       setError('Error loading more results');
     } finally {
       setLoading(false);
@@ -123,244 +100,265 @@ const Search = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Search Mode Toggle */}
-      <div className="mb-6">
-        <div className="flex space-x-4 justify-center">
-          <button
-            type="button"
-            onClick={() => setSearchMode('basic')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              searchMode === 'basic'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Basic Search
-          </button>
-          <button
-            type="button"
-            onClick={() => setSearchMode('advanced')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              searchMode === 'advanced'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Advanced Search
-          </button>
-        </div>
-      </div>
-
-      {/* Search Form */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <form onSubmit={searchMode === 'basic' ? handleBasicSearch : handleAdvancedSearch}>
-          <div className="space-y-4">
-            {/* Username Input */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                GitHub Username
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={searchParams.username}
-                onChange={handleInputChange}
-                placeholder="Enter GitHub username"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-              />
-            </div>
-
-            {/* Advanced Search Fields */}
-            {searchMode === 'advanced' && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      id="location"
-                      name="location"
-                      value={searchParams.location}
-                      onChange={handleInputChange}
-                      placeholder="e.g., San Francisco, CA"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="minRepos" className="block text-sm font-medium text-gray-700 mb-2">
-                      Minimum Repositories
-                    </label>
-                    <input
-                      type="number"
-                      id="minRepos"
-                      name="minRepos"
-                      value={searchParams.minRepos}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 5"
-                      min="0"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Loading State */}
-      {loading && (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600">Loading...</p>
-        </div>
-      )}
-
-      {/* Error State */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-red-800">{error}</p>
-        </div>
-      )}
-
-      {/* Basic Search Result */}
-      {userData && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center space-x-6">
-            <img
-              src={userData.avatar_url}
-              alt={`${userData.login}'s avatar`}
-              className="w-20 h-20 rounded-full border-2 border-gray-200"
-            />
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-gray-900">{userData.name || userData.login}</h3>
-              <p className="text-gray-600">@{userData.login}</p>
-              {userData.bio && <p className="text-gray-700 mt-2">{userData.bio}</p>}
-              {userData.location && (
-                <p className="text-gray-600 mt-1">📍 {userData.location}</p>
-              )}
-              <div className="flex space-x-4 mt-2 text-sm text-gray-600">
-                <span>📚 {userData.public_repos} repositories</span>
-                <span>👥 {userData.followers} followers</span>
-                <span>👤 {userData.following} following</span>
-              </div>
-              <a
-                href={userData.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                View Profile
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Advanced Search Results */}
-      {searchResults && (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          {/* Sidebar (Filters) */}
-          <aside className="md:col-span-3">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-12 gap-8">
+        {/* Left Sidebar - 3 columns */}
+        <div className="col-span-3">
+          <div className="space-y-6">
+            {/* Search Form */}
             <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h4 className="text-sm font-semibold text-gray-900 mb-3">Filters</h4>
-              <a
-                href="https://github.com/search/advanced"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline text-sm"
-              >
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Filters</h3>
+              
+              {/* Search Mode Toggle */}
+              <div className="mb-4">
+                <div className="flex space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setSearchMode('basic')}
+                    className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
+                      searchMode === 'basic'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Basic
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSearchMode('advanced')}
+                    className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
+                      searchMode === 'advanced'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Advanced
+                  </button>
+                </div>
+              </div>
+              
+              <form onSubmit={searchMode === 'basic' ? handleBasicSearch : handleAdvancedSearch} className="space-y-3">
+                {/* Username Input */}
+                <div>
+                  <label htmlFor="username" className="block text-xs font-medium text-gray-700 mb-1">
+                    GitHub Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={searchParams.username}
+                    onChange={handleInputChange}
+                    placeholder="Enter GitHub username"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Advanced Search Fields */}
+                {searchMode === 'advanced' && (
+                  <>
+                    <div>
+                      <label htmlFor="location" className="block text-xs font-medium text-gray-700 mb-1">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        value={searchParams.location}
+                        onChange={handleInputChange}
+                        placeholder="e.g., San Francisco, CA"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="minRepos" className="block text-xs font-medium text-gray-700 mb-1">
+                        Min Repositories
+                      </label>
+                      <input
+                        type="number"
+                        id="minRepos"
+                        name="minRepos"
+                        value={searchParams.minRepos}
+                        onChange={handleInputChange}
+                        placeholder="e.g., 5"
+                        min="0"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-2 px-3 text-sm rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+                >
+                  {loading ? 'Searching...' : 'Search'}
+                </button>
+              </form>
+            </div>
+            
+            {/* Advanced search link */}
+            <div className="text-center">
+              <a href="#" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                 Advanced search
               </a>
             </div>
-          </aside>
+          </div>
+        </div>
 
-          {/* Results List */}
-          <section className="md:col-span-9">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {searchResults.total_count?.toLocaleString?.() || searchResults.total_count} user results
-              </h3>
+        {/* Right Main Content - 9 columns */}
+        <div className="col-span-9">
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <p className="mt-2 text-gray-600">Loading...</p>
             </div>
+          )}
 
-            <div className="bg-white border border-gray-200 rounded-lg divide-y divide-gray-200">
-              {searchResults.items.map((user) => (
-                <div key={user.id} className="p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start gap-4">
-                    <img
-                      src={user.avatar_url}
-                      alt={`${user.login}'s avatar`}
-                      className="w-12 h-12 rounded-full ring-1 ring-gray-200"
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-800">{error}</p>
+            </div>
+          )}
+
+          {/* Basic Search Result */}
+          {userData && (
+            <div className="space-y-4">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-3">
+                    <img 
+                      src={userData.avatar_url} 
+                      alt={`${userData.login}'s avatar`}
+                      className="w-12 h-12 rounded-full"
                     />
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-x-2">
-                        <a
-                          href={user.html_url}
-                          target="_blank"
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <a 
+                          href={userData.html_url} 
+                          target="_blank" 
                           rel="noopener noreferrer"
-                          className="font-semibold text-blue-600 hover:underline"
+                          className="text-blue-600 hover:text-blue-800 font-semibold"
                         >
-                          {user.login}
+                          {userData.login}
                         </a>
-                        {user.name && <span className="text-gray-500">· {user.name}</span>}
-                      </div>
-
-                      {user.bio && (
-                        <p className="text-gray-700 mt-1 break-words">{user.bio}</p>
-                      )}
-
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-2">
-                        {user.location && <span>📍 {user.location}</span>}
-                        {typeof user.public_repos === 'number' && (
-                          <span>📦 {user.public_repos} repos</span>
+                        {userData.name && (
+                          <>
+                            <span className="text-gray-500">·</span>
+                            <span className="text-gray-500">{userData.name}</span>
+                          </>
                         )}
                       </div>
+                      {userData.bio && (
+                        <p className="text-gray-700 text-sm mt-1">{userData.bio}</p>
+                      )}
+                      <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                        {userData.location && (
+                          <span className="flex items-center">
+                            📍 {userData.location}
+                          </span>
+                        )}
+                        <span className="flex items-center">
+                          📦 {userData.public_repos} repositories
+                        </span>
+                      </div>
                     </div>
+                  </div>
+                  <button className="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors">
+                    View
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
-                    <div className="ml-4">
+          {/* Advanced Search Results */}
+          {searchResults && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {searchResults.total_count.toLocaleString()} user results
+                </h3>
+              </div>
+
+              <div className="space-y-3">
+                {searchResults.items.map((user) => (
+                  <div key={user.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3">
+                        <img
+                          src={user.avatar_url}
+                          alt={`${user.login}'s avatar`}
+                          className="w-12 h-12 rounded-full"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <a
+                              href={user.html_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 font-semibold"
+                            >
+                              {user.login}
+                            </a>
+                            {user.name && (
+                              <>
+                                <span className="text-gray-500">·</span>
+                                <span className="text-gray-500">{user.name}</span>
+                              </>
+                            )}
+                          </div>
+                          {user.bio && (
+                            <p className="text-gray-700 text-sm mt-1">{user.bio}</p>
+                          )}
+                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                            {user.location && (
+                              <span className="flex items-center">
+                                📍 {user.location}
+                              </span>
+                            )}
+                            {user.public_repos !== undefined && (
+                              <span className="flex items-center">
+                                📦 {user.public_repos} repositories
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                       <a
                         href={user.html_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-100"
+                        className="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors"
                       >
                         View
                       </a>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Load More Button */}
-            {searchResults.items.length < searchResults.total_count && (
-              <div className="text-center mt-6">
-                <button
-                  onClick={loadMoreResults}
-                  disabled={loading}
-                  className="px-6 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-400"
-                >
-                  {loading ? 'Loading...' : 'Load More'}
-                </button>
+                ))}
               </div>
-            )}
-          </section>
+
+              {/* Load More Button */}
+              {searchResults.items.length < searchResults.total_count && (
+                <div className="text-center mt-6">
+                  <button
+                    onClick={loadMoreResults}
+                    disabled={loading}
+                    className="px-6 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-400 transition-colors"
+                  >
+                    {loading ? 'Loading...' : 'Load More'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
