@@ -9,11 +9,19 @@ const BASE_URL = 'https://api.github.com';
  */
 export const fetchUserData = async (username) => {
   try {
-    const response = await axios.get(`${BASE_URL}/users/${username}`);
+    const response = await axios.get(`${BASE_URL}/users/${username}`, {
+      timeout: 10000, // 10 second timeout
+    });
     return response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
       throw new Error('User not found');
+    }
+    if (error.response && error.response.status === 403) {
+      throw new Error('API rate limit exceeded. Please try again later.');
+    }
+    if (error.code === 'ECONNABORTED') {
+      throw new Error('Request timeout. Please check your connection.');
     }
     throw new Error('An error occurred while fetching user data');
   }
@@ -44,18 +52,30 @@ export const searchUsers = async ({ username, location, minRepos, page = 1 }) =>
       query += ` repos:>=${minRepos}`;
     }
 
+    // Ensure we have at least some search criteria
+    if (!query.trim()) {
+      throw new Error('Please provide search criteria');
+    }
+
     const response = await axios.get(`${BASE_URL}/search/users`, {
       params: {
         q: query.trim(),
         page,
         per_page: 10
-      }
+      },
+      timeout: 10000, // 10 second timeout
     });
 
     return response.data;
   } catch (error) {
     if (error.response && error.response.status === 422) {
       throw new Error('Invalid search query');
+    }
+    if (error.response && error.response.status === 403) {
+      throw new Error('API rate limit exceeded. Please try again later.');
+    }
+    if (error.code === 'ECONNABORTED') {
+      throw new Error('Request timeout. Please check your connection.');
     }
     throw new Error('An error occurred while searching users');
   }
