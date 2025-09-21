@@ -67,8 +67,21 @@ const Search = () => {
         minRepos: searchParams.minRepos ? parseInt(searchParams.minRepos) : null,
         page: 1
       });
-      setSearchResults(data);
-    } catch (err) {
+
+      // Enrich each result with detailed user info (bio, location, public_repos)
+      const details = await Promise.all(
+        (data.items || []).map((u) =>
+          fetchUserData(u.login).catch(() => null)
+        )
+      );
+
+      const enriched = {
+        ...data,
+        items: (data.items || []).map((u, i) => ({ ...u, ...(details[i] || {}) })),
+      };
+
+      setSearchResults(enriched);
+    } catch {
       setError('Looks like we cant find any users matching your criteria');
     } finally {
       setLoading(false);
@@ -87,12 +100,22 @@ const Search = () => {
         page: currentPage + 1
       });
 
+      const details = await Promise.all(
+        (data.items || []).map((u) =>
+          fetchUserData(u.login).catch(() => null)
+        )
+      );
+      const enrichedItems = (data.items || []).map((u, i) => ({
+        ...u,
+        ...(details[i] || {}),
+      }));
+
       setSearchResults(prev => ({
         ...data,
-        items: [...prev.items, ...data.items]
+        items: [...prev.items, ...enrichedItems]
       }));
       setCurrentPage(prev => prev + 1);
-    } catch (err) {
+    } catch {
       setError('Error loading more results');
     } finally {
       setLoading(false);
@@ -249,54 +272,93 @@ const Search = () => {
 
       {/* Advanced Search Results */}
       {searchResults && (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Search Results ({searchResults.total_count} users found)
-            </h3>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          {/* Sidebar (Filters) */}
+          <aside className="md:col-span-3">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">Filters</h4>
+              <a
+                href="https://github.com/search/advanced"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline text-sm"
+              >
+                Advanced search
+              </a>
+            </div>
+          </aside>
 
-          <div className="grid gap-4">
-            {searchResults.items.map((user) => (
-              <div key={user.id} className="bg-white rounded-lg shadow-md p-4">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={user.avatar_url}
-                    alt={`${user.login}'s avatar`}
-                    className="w-16 h-16 rounded-full border-2 border-gray-200"
-                  />
-                  <div className="flex-1">
-                    <h4 className="text-lg font-semibold text-gray-900">{user.login}</h4>
-                    {user.name && <p className="text-gray-600">{user.name}</p>}
-                    <div className="flex space-x-4 mt-1 text-sm text-gray-600">
-                      <span>⭐ {user.score?.toFixed(1) || 'N/A'} score</span>
+          {/* Results List */}
+          <section className="md:col-span-9">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {searchResults.total_count?.toLocaleString?.() || searchResults.total_count} user results
+              </h3>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-lg divide-y divide-gray-200">
+              {searchResults.items.map((user) => (
+                <div key={user.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-start gap-4">
+                    <img
+                      src={user.avatar_url}
+                      alt={`${user.login}'s avatar`}
+                      className="w-12 h-12 rounded-full ring-1 ring-gray-200"
+                    />
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-x-2">
+                        <a
+                          href={user.html_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-blue-600 hover:underline"
+                        >
+                          {user.login}
+                        </a>
+                        {user.name && <span className="text-gray-500">· {user.name}</span>}
+                      </div>
+
+                      {user.bio && (
+                        <p className="text-gray-700 mt-1 break-words">{user.bio}</p>
+                      )}
+
+                      <div className="flex flex-wrap gap-4 text-sm text-gray-600 mt-2">
+                        {user.location && <span>📍 {user.location}</span>}
+                        {typeof user.public_repos === 'number' && (
+                          <span>📦 {user.public_repos} repos</span>
+                        )}
+                      </div>
                     </div>
-                    <a
-                      href={user.html_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-2 text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      View Profile →
-                    </a>
+
+                    <div className="ml-4">
+                      <a
+                        href={user.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-100"
+                      >
+                        View
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Load More Button */}
-          {searchResults.items.length < searchResults.total_count && (
-            <div className="text-center mt-6">
-              <button
-                onClick={loadMoreResults}
-                disabled={loading}
-                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? 'Loading...' : 'Load More'}
-              </button>
+              ))}
             </div>
-          )}
+
+            {/* Load More Button */}
+            {searchResults.items.length < searchResults.total_count && (
+              <div className="text-center mt-6">
+                <button
+                  onClick={loadMoreResults}
+                  disabled={loading}
+                  className="px-6 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 disabled:bg-gray-100 disabled:text-gray-400"
+                >
+                  {loading ? 'Loading...' : 'Load More'}
+                </button>
+              </div>
+            )}
+          </section>
         </div>
       )}
     </div>
