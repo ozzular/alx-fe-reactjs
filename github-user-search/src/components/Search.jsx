@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchUserData, searchUsers } from '../services/githubService';
 
 const Search = () => {
@@ -14,6 +14,33 @@ const Search = () => {
   const [searchMode, setSearchMode] = useState('basic'); // 'basic' or 'advanced'
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Listen to global header search submission and trigger a basic search
+  useEffect(() => {
+    const onHeaderSearch = (e) => {
+      const q = (e.detail?.query || '').trim();
+      if (!q) return;
+      setSearchParams((prev) => ({ ...prev, username: q }));
+
+      (async () => {
+        setLoading(true);
+        setError('');
+        setUserData(null);
+        setSearchResults(null);
+        try {
+          const data = await fetchUserData(q);
+          setUserData(data);
+        } catch (err) {
+          setError('Looks like we cant find the user');
+        } finally {
+          setLoading(false);
+        }
+      })();
+    };
+
+    window.addEventListener('app:search', onHeaderSearch);
+    return () => window.removeEventListener('app:search', onHeaderSearch);
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSearchParams(prev => ({
@@ -25,7 +52,7 @@ const Search = () => {
 
   const handleBasicSearch = async (e) => {
     e.preventDefault();
-    
+
     if (!searchParams.username.trim()) {
       setError('Please enter a username');
       return;
@@ -48,7 +75,7 @@ const Search = () => {
 
   const handleAdvancedSearch = async (e) => {
     e.preventDefault();
-    
+
     if (!searchParams.username.trim() && !searchParams.location.trim()) {
       setError('Please enter a username or location');
       return;
@@ -86,7 +113,7 @@ const Search = () => {
         minRepos: searchParams.minRepos ? parseInt(searchParams.minRepos) : null,
         page: currentPage + 1
       });
-      
+
       setSearchResults(prev => ({
         ...data,
         items: [...prev.items, ...data.items]
@@ -171,9 +198,9 @@ const Search = () => {
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <a 
-                          href={userData.html_url} 
-                          target="_blank" 
+                        <a
+                          href={userData.html_url}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 font-semibold"
                         >
