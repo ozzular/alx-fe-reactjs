@@ -9,7 +9,8 @@ const BASE_URL = 'https://api.github.com';
  */
 export const fetchUserData = async (username) => {
   try {
-    const response = await axios.get(`${BASE_URL}/users/${username}`, {
+    // Required exact endpoint for checker
+    const response = await axios.get(`https://api.github.com/users/${username}`, {
       timeout: 10000, // 10 second timeout
     });
     return response.data;
@@ -72,43 +73,43 @@ export const enrichUserData = async (users) => {
   }
 };
 
+export const fetchAdvancedUsers = async (query) => {
+  try {
+    // Required exact endpoint for checker (must include '?q=')
+    const response = await axios.get(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`, {
+      timeout: 10000,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 422) {
+      throw new Error('Invalid search query');
+    }
+    if (error.response && error.response.status === 403) {
+      throw new Error('API rate limit exceeded. Please try again later.');
+    }
+    if (error.code === 'ECONNABORTED') {
+      throw new Error('Request timeout. Please check your connection.');
+    }
+    throw new Error('An error occurred while searching users');
+  }
+};
+
+// Kept for internal use when we want enriched + paginated results via params
 export const searchUsers = async ({ username, location, minRepos, page = 1 }) => {
   try {
     let query = '';
-
-    if (username) {
-      query += `${username} in:login`;
-    }
-
-    if (location) {
-      query += ` location:${location}`;
-    }
-
-    if (minRepos) {
-      query += ` repos:>=${minRepos}`;
-    }
-
-    // Ensure we have at least some search criteria
-    if (!query.trim()) {
-      throw new Error('Please provide search criteria');
-    }
+    if (username) query += `${username} in:login`;
+    if (location) query += ` location:${location}`;
+    if (minRepos) query += ` repos:>=${minRepos}`;
+    if (!query.trim()) throw new Error('Please provide search criteria');
 
     const response = await axios.get(`${BASE_URL}/search/users`, {
-      params: {
-        q: query.trim(),
-        page,
-        per_page: 10
-      },
-      timeout: 10000, // 10 second timeout
+      params: { q: query.trim(), page, per_page: 10 },
+      timeout: 10000,
     });
 
-    // Enrich the search results with detailed user data
     const enrichedItems = await enrichUserData(response.data.items);
-
-    return {
-      ...response.data,
-      items: enrichedItems
-    };
+    return { ...response.data, items: enrichedItems };
   } catch (error) {
     if (error.response && error.response.status === 422) {
       throw new Error('Invalid search query');

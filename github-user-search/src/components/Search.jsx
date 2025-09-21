@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
-import { fetchUserData, searchUsers } from '../services/githubService';
+import { fetchUserData, fetchAdvancedUsers, enrichUserData } from '../services/githubService';
 
 const Search = () => {
-  const [searchParams, setSearchParams] = useState({
-    username: '',
-    location: '',
-    minRepos: ''
-  });
+  const [username, setUsername] = useState('');
+  const [location, setLocation] = useState('');
+  const [minRepos, setMinRepos] = useState('');
+  const [lastQuery, setLastQuery] = useState('');
   const [userData, setUserData] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [searchMode, setSearchMode] = useState('basic'); // 'basic' or 'advanced'
+
   const [currentPage, setCurrentPage] = useState(1);
 
   // Listen to global header search submission and trigger a basic search
@@ -19,7 +18,9 @@ const Search = () => {
     const onHeaderSearch = (e) => {
       const q = (e.detail?.query || '').trim();
       if (!q) return;
-      setSearchParams((prev) => ({ ...prev, username: q }));
+      setUsername(q);
+      setLocation('');
+      setMinRepos('');
 
       (async () => {
         setLoading(true);
@@ -29,7 +30,7 @@ const Search = () => {
         try {
           const data = await fetchUserData(q);
           setUserData(data);
-        } catch (err) {
+        } catch {
           setError('Looks like we cant find the user');
         } finally {
           setLoading(false);
@@ -41,19 +42,10 @@ const Search = () => {
     return () => window.removeEventListener('app:search', onHeaderSearch);
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSearchParams(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (error) setError(''); // Clear error when user starts typing
-  };
 
-  const handleBasicSearch = async (e) => {
-    e.preventDefault();
 
-    if (!searchParams.username.trim()) {
+  const handleBasicSearch = async () => {
+    if (!username.trim()) {
       setError('Please enter a username');
       return;
     }
@@ -64,19 +56,35 @@ const Search = () => {
     setSearchResults(null);
 
     try {
-      const data = await fetchUserData(searchParams.username.trim());
+      const data = await fetchUserData(username.trim());
       setUserData(data);
-    } catch (err) {
+    } catch {
       setError('Looks like we cant find the user');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAdvancedSearch = async (e) => {
-    e.preventDefault();
+  const buildAdvancedQuery = () => {
+    const parts = [];
+    if (username.trim()) parts.push(username.trim());
+    if (location.trim()) parts.push(`location:${location.trim()}`);
+    if (minRepos) parts.push(`repos:>${minRepos}`);
+    return parts.join('+');
+  };
 
-    if (!searchParams.username.trim() && !searchParams.location.trim()) {
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    if (location.trim() || (minRepos && String(minRepos).trim() !== '')) {
+      await handleAdvancedSearch();
+    } else {
+      await handleBasicSearch();
+    }
+  };
+
+  const handleAdvancedSearch = async () => {
+    const query = buildAdvancedQuery();
+    if (!query) {
       setError('Please enter a username or location');
       return;
     }
@@ -88,39 +96,32 @@ const Search = () => {
     setCurrentPage(1);
 
     try {
-      const data = await searchUsers({
-        username: searchParams.username.trim(),
-        location: searchParams.location.trim(),
-        minRepos: searchParams.minRepos ? parseInt(searchParams.minRepos) : null,
-        page: 1
-      });
-      setSearchResults(data);
-    } catch (err) {
-      setError('Looks like we cant find any users matching your criteria');
+      const data = await fetchAdvancedUsers(query);
+      const enriched = await enrichUserData(data.items || []);
+      setSearchResults({ ...data, items: enriched });
+      setLastQuery(query);
+    } catch {
+      setError('Looks like we cant find the user');
     } finally {
       setLoading(false);
     }
   };
 
   const loadMoreResults = async () => {
-    if (!searchResults || loading) return;
+    if (!searchResults || loading || !lastQuery) return;
 
     setLoading(true);
     try {
-      const data = await searchUsers({
-        username: searchParams.username.trim(),
-        location: searchParams.location.trim(),
-        minRepos: searchParams.minRepos ? parseInt(searchParams.minRepos) : null,
-        page: currentPage + 1
-      });
-
+      const nextPage = currentPage + 1;
+      const data = await fetchAdvancedUsers(`${lastQuery}&page=${nextPage}`);
+      const enriched = await enrichUserData(data.items || []);
       setSearchResults(prev => ({
         ...data,
-        items: [...prev.items, ...data.items]
+        items: [...prev.items, ...enriched]
       }));
       setCurrentPage(prev => prev + 1);
-    } catch (err) {
-      setError('Error loading more results');
+    } catch {
+      setError('Looks like we cant find the user');
     } finally {
       setLoading(false);
     }
@@ -169,6 +170,36 @@ const Search = () => {
 
         {/* Right Main Content - 9 columns */}
         <div className="col-span-12 lg:col-span-9">
+          {/* Search Form */}
+          <form onSubmit={handleFormSubmit} className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-12 md:col-span-3">
+                <label className="sr-only" htmlFor="username">Username</label>
+                <input id="username" type="text" placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+              </div>
+              <div className="col-span-12 md:col-span-3">
+                <label className="sr-only" htmlFor="location">Location</label>
+                <input id="location" type="text" placeholder="Location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+              </div>
+              <div className="col-span-12 md:col-span-3">
+                <label className="sr-only" htmlFor="minRepos">Minimum repos</label>
+                <input id="minRepos" type="number" placeholder="Minimum repos"
+                  value={minRepos}
+                  onChange={(e) => setMinRepos(e.target.value)}
+                  min="0"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+              </div>
+              <div className="col-span-12 md:col-span-3 flex md:justify-end">
+                <button type="submit" className="px-5 py-2 bg-blue-600 text-white rounded-md text-sm w-full md:w-auto">Search</button>
+              </div>
+            </div>
+          </form>
           {/* Loading State */}
           {loading && (
             <div className="text-center py-8">
