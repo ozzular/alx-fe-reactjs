@@ -170,36 +170,62 @@ const Search = () => {
 
         {/* Right Main Content - 9 columns */}
         <div className="col-span-12 lg:col-span-9">
-          {/* Search Form */}
-          <form onSubmit={handleFormSubmit} className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-            <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-12 md:col-span-3">
-                <label className="sr-only" htmlFor="username">Username</label>
-                <input id="username" type="text" placeholder="Username"
+          {/* Basic Search Form - Only visible when no results */}
+          {!userData && !searchResults && !loading && !error && (
+            <form onSubmit={handleFormSubmit} className="mb-6">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Enter GitHub username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                  className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  Search
+                </button>
               </div>
-              <div className="col-span-12 md:col-span-3">
-                <label className="sr-only" htmlFor="location">Location</label>
-                <input id="location" type="text" placeholder="Location"
+            </form>
+          )}
+
+          {/* Advanced Search Form - Only visible when needed */}
+          {(location.trim() || minRepos) && (
+            <form onSubmit={handleFormSubmit} className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="Location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
-              </div>
-              <div className="col-span-12 md:col-span-3">
-                <label className="sr-only" htmlFor="minRepos">Minimum repos</label>
-                <input id="minRepos" type="number" placeholder="Minimum repos"
+                  className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                />
+                <input
+                  type="number"
+                  placeholder="Min repos"
                   value={minRepos}
                   onChange={(e) => setMinRepos(e.target.value)}
                   min="0"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+                  className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                />
               </div>
-              <div className="col-span-12 md:col-span-3 flex md:justify-end">
-                <button type="submit" className="px-5 py-2 bg-blue-600 text-white rounded-md text-sm w-full md:w-auto">Search</button>
-              </div>
-            </div>
-          </form>
+              <button
+                type="submit"
+                className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
+              >
+                Search
+              </button>
+            </form>
+          )}
           {/* Loading State */}
           {loading && (
             <div className="text-center py-8">
@@ -217,49 +243,55 @@ const Search = () => {
 
           {/* Basic Search Result */}
           {userData && (
-            <div className="space-y-4">
-              <div className="py-6 border-t border-gray-200 hover:bg-gray-50">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-gray-600">1 user result</span>
+              </div>
+              <div className="border-t border-gray-200 pt-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3">
                     <img
                       src={userData.avatar_url}
                       alt={`${userData.login}'s avatar`}
-                      className="w-12 h-12 rounded-full border border-gray-200"
+                      className="w-16 h-16 rounded-full"
                       onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `https://github.com/identicons/${userData.login}.png`; }}
                     />
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
                         <a
                           href={userData.html_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 font-semibold"
+                          className="text-xl font-semibold text-blue-600 hover:text-blue-800"
                         >
                           {userData.login}
                         </a>
                         {userData.name && (
-                          <>
-                            <span className="text-gray-500">·</span>
-                            <span className="text-gray-500">{userData.name}</span>
-                          </>
+                          <span className="text-gray-600 text-lg">{userData.name}</span>
                         )}
                       </div>
                       {userData.bio && (
-                        <p className="text-gray-700 text-sm mt-1">{userData.bio}</p>
+                        <p className="text-gray-700 text-sm mb-2 leading-relaxed">{userData.bio}</p>
                       )}
-                      <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
                         {userData.location && (
                           <span className="flex items-center">
-                            📍 {userData.location}
+                            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                            </svg>
+                            {userData.location}
                           </span>
                         )}
                         <span className="flex items-center">
-                          📦 {userData.public_repos} repositories
+                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                          </svg>
+                          {userData.public_repos} repositories
                         </span>
                       </div>
                     </div>
                   </div>
-                  <button className="px-4 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors">
+                  <button className="px-4 py-1.5 text-sm font-medium border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors">
                     Follow
                   </button>
                 </div>
@@ -270,68 +302,78 @@ const Search = () => {
           {/* Advanced Search Results */}
           {searchResults && (
             <div className="space-y-4">
-              <div className="flex items-center space-x-4 mb-4">
-                <button type="button" className="inline-flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 text-gray-700">
-                  Filters <span className="ml-1">▾</span>
-                </button>
-                <h3 className="text-2xl font-semibold text-gray-900">
-                  {searchResults.total_count.toLocaleString()} user results
-                </h3>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <button type="button" className="inline-flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 text-gray-700">
+                    Filters <span className="ml-1">▾</span>
+                  </button>
+                  <span className="text-sm text-gray-600">
+                    {searchResults.total_count.toLocaleString()} user results
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <span>Sort:</span>
+                  <select className="border border-gray-300 rounded px-2 py-1 text-sm">
+                    <option>Best match</option>
+                    <option>Most followers</option>
+                    <option>Fewest followers</option>
+                    <option>Most recently joined</option>
+                    <option>Least recently joined</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="divide-y divide-gray-200">
                 {searchResults.items.map((user) => (
-                  <div key={user.id} className="py-6 border-t border-gray-200 hover:bg-gray-50">
+                  <div key={user.id} className="py-4 hover:bg-gray-50">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3">
                         <img
                           src={user.avatar_url}
                           alt={`${user.login}'s avatar`}
-                          className="w-12 h-12 rounded-full border border-gray-200"
+                          className="w-16 h-16 rounded-full"
                           onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `https://github.com/identicons/${user.login}.png`; }}
                         />
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-1">
                             <a
                               href={user.html_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 font-semibold"
+                              className="text-xl font-semibold text-blue-600 hover:text-blue-800"
                             >
                               {user.login}
                             </a>
                             {user.name && (
-                              <>
-                                <span className="text-gray-500">·</span>
-                                <span className="text-gray-500">{user.name}</span>
-                              </>
+                              <span className="text-gray-600 text-lg">{user.name}</span>
                             )}
                           </div>
                           {user.bio && (
-                            <p className="text-gray-700 text-sm mt-1">{user.bio}</p>
+                            <p className="text-gray-700 text-sm mb-2 leading-relaxed">{user.bio}</p>
                           )}
-                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
                             {user.location && (
                               <span className="flex items-center">
-                                📍 {user.location}
+                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                </svg>
+                                {user.location}
                               </span>
                             )}
                             {user.public_repos !== undefined && (
                               <span className="flex items-center">
-                                📦 {user.public_repos} repositories
+                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                                </svg>
+                                {user.public_repos} repositories
                               </span>
                             )}
                           </div>
                         </div>
                       </div>
-                      <a
-                        href={user.html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors"
-                      >
+                      <button className="px-4 py-1.5 text-sm font-medium border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors">
                         Follow
-                      </a>
+                      </button>
                     </div>
                   </div>
                 ))}
