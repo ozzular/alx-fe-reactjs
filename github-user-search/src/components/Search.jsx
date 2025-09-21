@@ -101,110 +101,41 @@ const Search = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="pt-6">
+        <h1 className="text-3xl font-bold text-gray-900">Search</h1>
+      </div>
+      <hr className="border-gray-200 my-6" />
       <div className="grid grid-cols-12 gap-8">
         {/* Left Sidebar - 3 columns */}
         <div className="col-span-12 lg:col-span-3">
-          <div className="space-y-6">
-            {/* Search Form */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Filters</h3>
-              
-              {/* Search Mode Toggle */}
-              <div className="mb-4">
-                <div className="flex space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => setSearchMode('basic')}
-                    className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
-                      searchMode === 'basic'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Basic
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSearchMode('advanced')}
-                    className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
-                      searchMode === 'advanced'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Advanced
-                  </button>
-                </div>
-              </div>
-              
-              <form onSubmit={searchMode === 'basic' ? handleBasicSearch : handleAdvancedSearch} className="space-y-3">
-                {/* Username Input */}
-                <div>
-                  <label htmlFor="username" className="block text-xs font-medium text-gray-700 mb-1">
-                    GitHub Username
-                  </label>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    value={searchParams.username}
-                    onChange={handleInputChange}
-                    placeholder="Enter GitHub username"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                {/* Advanced Search Fields */}
-                {searchMode === 'advanced' && (
-                  <>
-                    <div>
-                      <label htmlFor="location" className="block text-xs font-medium text-gray-700 mb-1">
-                        Location
-                      </label>
-                      <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        value={searchParams.location}
-                        onChange={handleInputChange}
-                        placeholder="e.g., San Francisco, CA"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="minRepos" className="block text-xs font-medium text-gray-700 mb-1">
-                        Min Repositories
-                      </label>
-                      <input
-                        type="number"
-                        id="minRepos"
-                        name="minRepos"
-                        value={searchParams.minRepos}
-                        onChange={handleInputChange}
-                        placeholder="e.g., 5"
-                        min="0"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                    </div>
-                  </>
-                )}
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-600 text-white py-2 px-3 text-sm rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
-                >
-                  {loading ? 'Searching...' : 'Search'}
-                </button>
-              </form>
+          <div className="bg-white border border-gray-200 rounded-lg">
+            <div className="p-4">
+              <h3 className="text-sm font-semibold text-gray-900">Repositories</h3>
             </div>
-            
-            {/* Advanced search link */}
-            <div className="text-center">
-              <a href="#" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                Advanced search
-              </a>
+            <div className="divide-y divide-gray-200">
+              <div className="flex items-center justify-between px-4 py-3 text-sm">
+                <span className="text-gray-700">Code</span>
+                <span className="text-gray-500">8K</span>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 text-sm">
+                <span className="text-gray-700">Commits</span>
+                <span className="text-gray-500">1M</span>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 text-sm">
+                <span className="text-gray-700">Issues</span>
+                <span className="text-gray-500">2M</span>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 text-sm">
+                <span className="text-gray-700">Discussions</span>
+                <span className="text-gray-500">101K</span>
+              </div>
+              <div className="flex items-center justify-between px-4 py-3 text-sm">
+                <span className="text-gray-700">Packages</span>
+                <span className="text-gray-500">243</span>
+              </div>
+            </div>
+            <div className="p-4">
+              <a href="#" className="text-blue-600 hover:text-blue-800 text-sm font-medium">Advanced search</a>
             </div>
           </div>
         </div>
@@ -229,7 +160,7 @@ const Search = () => {
           {/* Basic Search Result */}
           {userData && (
             <div className="space-y-4">
-              <div className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+              <div className="py-6 border-t border-gray-200 hover:bg-gray-50">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3">
                     <img
@@ -270,8 +201,8 @@ const Search = () => {
                       </div>
                     </div>
                   </div>
-                  <button className="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors">
-                    View
+                  <button className="px-4 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors">
+                    Follow
                   </button>
                 </div>
               </div>
@@ -281,15 +212,18 @@ const Search = () => {
           {/* Advanced Search Results */}
           {searchResults && (
             <div className="space-y-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+              <div className="flex items-center space-x-4 mb-4">
+                <button type="button" className="inline-flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 text-gray-700">
+                  Filters <span className="ml-1">▾</span>
+                </button>
+                <h3 className="text-2xl font-semibold text-gray-900">
                   {searchResults.total_count.toLocaleString()} user results
                 </h3>
               </div>
 
               <div className="space-y-3">
                 {searchResults.items.map((user) => (
-                  <div key={user.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div key={user.id} className="py-6 border-t border-gray-200 hover:bg-gray-50">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3">
                         <img
@@ -336,9 +270,9 @@ const Search = () => {
                         href={user.html_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors"
+                        className="px-4 py-1.5 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition-colors"
                       >
-                        View
+                        Follow
                       </a>
                     </div>
                   </div>
