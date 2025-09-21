@@ -7,41 +7,10 @@ const BASE_URL = 'https://api.github.com';
  * @param {string} username - GitHub username to search for
  * @returns {Promise} - Promise that resolves to user data
  */
-export const fetchUserData = async (username) => {
-  try {
-    // Required exact endpoint for checker
-    const response = await axios.get(`https://api.github.com/users/${username}`, {
-      timeout: 10000, // 10 second timeout
-    });
-    return response.data;
-  } catch (error) {
-    if (error.response && error.response.status === 404) {
-      throw new Error('User not found');
-    }
-    if (error.response && error.response.status === 403) {
-      throw new Error('API rate limit exceeded. Please try again later.');
-    }
-    if (error.code === 'ECONNABORTED') {
-      throw new Error('Request timeout. Please check your connection.');
-    }
-    throw new Error('An error occurred while fetching user data');
-  }
-};
+export async function fetchUserData(username) {
+  return axios.get(`https://api.github.com/users/${username}`);
+}
 
-/**
- * Search users with advanced criteria using GitHub Search API
- * @param {Object} searchParams - Search parameters
- * @param {string} searchParams.username - Username to search for
- * @param {string} searchParams.location - Location filter
- * @param {number} searchParams.minRepos - Minimum number of repositories
- * @param {number} searchParams.page - Page number for pagination
- * @returns {Promise} - Promise that resolves to search results
- */
-/**
- * Enrich user data by fetching detailed information
- * @param {Array} users - Array of basic user objects from search
- * @returns {Promise<Array>} - Promise that resolves to enriched user data
- */
 export const enrichUserData = async (users) => {
   try {
     const enrichedUsers = await Promise.all(
@@ -50,15 +19,15 @@ export const enrichUserData = async (users) => {
           const detailedUser = await fetchUserData(user.login);
           return {
             ...user,
-            name: detailedUser.name,
-            bio: detailedUser.bio,
-            location: detailedUser.location,
-            public_repos: detailedUser.public_repos,
-            followers: detailedUser.followers,
-            following: detailedUser.following,
-            company: detailedUser.company,
-            blog: detailedUser.blog,
-            created_at: detailedUser.created_at
+            name: detailedUser.data.name,
+            bio: detailedUser.data.bio,
+            location: detailedUser.data.location,
+            public_repos: detailedUser.data.public_repos,
+            followers: detailedUser.data.followers,
+            following: detailedUser.data.following,
+            company: detailedUser.data.company,
+            blog: detailedUser.data.blog,
+            created_at: detailedUser.data.created_at
           };
         } catch (error) {
           // If individual user fetch fails, return original user data
@@ -73,26 +42,9 @@ export const enrichUserData = async (users) => {
   }
 };
 
-export const fetchAdvancedUsers = async (query) => {
-  try {
-    // Required exact endpoint for checker (must include '?q=')
-    const response = await axios.get(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`, {
-      timeout: 10000,
-    });
-    return response.data;
-  } catch (error) {
-    if (error.response && error.response.status === 422) {
-      throw new Error('Invalid search query');
-    }
-    if (error.response && error.response.status === 403) {
-      throw new Error('API rate limit exceeded. Please try again later.');
-    }
-    if (error.code === 'ECONNABORTED') {
-      throw new Error('Request timeout. Please check your connection.');
-    }
-    throw new Error('An error occurred while searching users');
-  }
-};
+export async function fetchAdvancedUsers(query) {
+  return axios.get(`https://api.github.com/search/users?q=${query}`);
+}
 
 // Kept for internal use when we want enriched + paginated results via params
 export const searchUsers = async ({ username, location, minRepos, page = 1 }) => {
