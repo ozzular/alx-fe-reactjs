@@ -166,7 +166,7 @@ const Search = () => {
                     <img
                       src={userData.avatar_url}
                       alt={`${userData.login}'s avatar`}
-                      className="w-12 h-12 rounded-[12px] border border-gray-200"
+                      className="w-12 h-12 rounded-full border border-gray-200"
                       onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `https://github.com/identicons/${userData.login}.png`; }}
                     />
                     <div className="flex-1">
@@ -229,7 +229,7 @@ const Search = () => {
                         <img
                           src={user.avatar_url}
                           alt={`${user.login}'s avatar`}
-                          className="w-12 h-12 rounded-[12px] border border-gray-200"
+                          className="w-12 h-12 rounded-full border border-gray-200"
                           onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `https://github.com/identicons/${user.login}.png`; }}
                         />
                         <div className="flex-1">
