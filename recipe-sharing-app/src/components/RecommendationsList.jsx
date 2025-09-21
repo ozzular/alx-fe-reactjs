@@ -319,6 +319,7 @@ const RecommendationsList = () => {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
     </div>

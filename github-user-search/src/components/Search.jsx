@@ -103,7 +103,7 @@ const Search = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-12 gap-8">
         {/* Left Sidebar - 3 columns */}
-        <div className="col-span-3">
+        <div className="col-span-12 lg:col-span-3">
           <div className="space-y-6">
             {/* Search Form */}
             <div className="bg-white border border-gray-200 rounded-lg p-4">
@@ -210,7 +210,7 @@ const Search = () => {
         </div>
 
         {/* Right Main Content - 9 columns */}
-        <div className="col-span-9">
+        <div className="col-span-12 lg:col-span-9">
           {/* Loading State */}
           {loading && (
             <div className="text-center py-8">
@@ -232,10 +232,11 @@ const Search = () => {
               <div className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3">
-                    <img 
-                      src={userData.avatar_url} 
+                    <img
+                      src={userData.avatar_url}
                       alt={`${userData.login}'s avatar`}
-                      className="w-12 h-12 rounded-full"
+                      className="w-12 h-12 rounded-[12px] border border-gray-200"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `https://github.com/identicons/${userData.login}.png`; }}
                     />
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
@@ -294,7 +295,8 @@ const Search = () => {
                         <img
                           src={user.avatar_url}
                           alt={`${user.login}'s avatar`}
-                          className="w-12 h-12 rounded-full"
+                          className="w-12 h-12 rounded-[12px] border border-gray-200"
+                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = `https://github.com/identicons/${user.login}.png`; }}
                         />
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
