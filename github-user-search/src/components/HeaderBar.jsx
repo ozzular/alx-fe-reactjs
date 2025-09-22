@@ -13,14 +13,6 @@ const HeaderBar = () => {
             <span className="text-white text-xl font-bold tracking-tight">GitHub User Search</span>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <a href="#" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-700 transition-colors">Pull requests</a>
-            <a href="#" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-700 transition-colors">Issues</a>
-            <a href="#" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-700 transition-colors">Marketplace</a>
-            <a href="#" className="text-gray-300 hover:text-white px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-700 transition-colors">Explore</a>
-          </nav>
-
           {/* User menu */}
           <div className="flex items-center space-x-3">
             <button className="text-gray-300 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors">
