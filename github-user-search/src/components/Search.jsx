@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { fetchUserData, fetchAdvancedUsers } from '../services/githubService';
 import UserCard from './UserCard';
 import UserList from './UserList';
+import ToggleSwitch from './ToggleSwitch';
 
 const Search = () => {
   const [username, setUsername] = useState('');
@@ -105,30 +106,15 @@ const Search = () => {
               </div>
             </form>
 
-            {/* Search Mode Toggle */}
-            <div className="flex justify-center mt-6">
-              <div className="inline-flex rounded-xl bg-gray-100 p-1 shadow-inner">
-                <button
-                  onClick={() => setIsAdvancedSearch(false)}
-                  className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                    !isAdvancedSearch
-                      ? 'bg-white text-gray-900 shadow'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Basic Search
-                </button>
-                <button
-                  onClick={() => setIsAdvancedSearch(true)}
-                  className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                    isAdvancedSearch
-                      ? 'bg-white text-gray-900 shadow'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Advanced Search
-                </button>
-              </div>
+            {/* Modern Toggle Switch */}
+            <div className="flex justify-center mt-8">
+              <ToggleSwitch
+                isOn={isAdvancedSearch}
+                onToggle={() => setIsAdvancedSearch(!isAdvancedSearch)}
+                offLabel="Basic Search"
+                onLabel="Advanced Search"
+                size="medium"
+              />
             </div>
           </div>
         </div>
