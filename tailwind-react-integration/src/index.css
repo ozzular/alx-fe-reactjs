@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@import "tailwindcss/theme.css";
+@import "tailwindcss/components.css";
+@import "tailwindcss/utilities.css";
 
 body {
   margin: 0;
