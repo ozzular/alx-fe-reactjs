@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "title": "Spaghetti Carbonara",
+    "summary": "A classic Italian pasta dish with eggs, cheese, bacon, and black pepper.",
+    "image": "https://via.placeholder.com/150",
+    "ingredients": [
+      "200g spaghetti",
+      "100g pancetta or bacon",
+      "2 large eggs",
+      "50g grated Pecorino Romano cheese",
+      "50g grated Parmesan cheese",
+      "Black pepper, freshly ground",
+      "Salt"
+    ],
+    "instructions": [
+      "Bring a large pot of salted water to boil and cook spaghetti according to package directions until al dente.",
+      "While pasta cooks, heat a large skillet over medium heat and cook pancetta until crispy, about 5-7 minutes.",
+      "In a bowl, whisk together eggs, cheeses, and plenty of black pepper.",
+      "Reserve 1 cup of pasta water before draining the spaghetti.",
+      "Add hot spaghetti to the skillet with pancetta and toss quickly.",
+      "Remove from heat and quickly stir in the egg mixture, adding pasta water as needed to create a creamy sauce.",
+      "Serve immediately with extra cheese and black pepper."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Chicken Tikka Masala",
+    "summary": "Chunks of grilled chicken (tikka) cooked in a smooth buttery & creamy tomato based gravy.",
+    "image": "https://via.placeholder.com/150",
+    "ingredients": [
+      "500g boneless chicken thighs, cut into chunks",
+      "1 cup plain yogurt",
+      "2 tbsp lemon juice",
+      "2 tsp ground cumin",
+      "2 tsp paprika",
+      "1 tsp turmeric",
+      "1 tsp garam masala",
+      "2 garlic cloves, minced",
+      "1 inch ginger, grated",
+      "2 tbsp vegetable oil",
+      "1 large onion, finely chopped",
+      "2 tsp ground coriander",
+      "1 tsp chili powder",
+      "400g can crushed tomatoes",
+      "200ml heavy cream",
+      "Fresh cilantro for garnish",
+      "Salt to taste"
+    ],
+    "instructions": [
+      "In a bowl, mix yogurt, lemon juice, cumin, paprika, turmeric, garam masala, garlic, ginger, and salt to make marinade.",
+      "Add chicken chunks and marinate for at least 1 hour, preferably overnight.",
+      "Preheat grill or oven to medium-high. Thread chicken onto skewers and grill for 10-12 minutes until charred and cooked through.",
+      "Heat oil in a large pan over medium heat. Add onion and cook until golden, about 8-10 minutes.",
+      "Add coriander, remaining cumin, chili powder, and cook for 1 minute until fragrant.",
+      "Stir in crushed tomatoes and simmer for 10 minutes.",
+      "Add grilled chicken and cream. Simmer for another 5-7 minutes until sauce thickens.",
+      "Garnish with fresh cilantro and serve with rice or naan bread."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Classic Caesar Salad",
+    "summary": "Crisp romaine lettuce with homemade Caesar dressing, croutons, and Parmesan cheese.",
+    "image": "https://via.placeholder.com/150",
+    "ingredients": [
+      "1 large head romaine lettuce, torn into pieces",
+      "1 cup croutons",
+      "1/2 cup grated Parmesan cheese",
+      "Freshly ground black pepper",
+      "For the dressing:",
+      "2 garlic cloves, minced",
+      "2 anchovy fillets (optional)",
+      "1 tsp Dijon mustard",
+      "1 tsp Worcestershire sauce",
+      "2 tbsp lemon juice",
+      "1/2 cup mayonnaise",
+      "1/4 cup olive oil",
+      "Salt and pepper to taste"
+    ],
+    "instructions": [
+      "For the dressing: In a bowl, mash garlic and anchovies (if using) into a paste.",
+      "Whisk in mustard, Worcestershire, and lemon juice.",
+      "Slowly whisk in mayonnaise and olive oil until emulsified. Season with salt and pepper.",
+      "In a large bowl, toss romaine lettuce with dressing until well coated.",
+      "Add croutons and Parmesan cheese, toss again.",
+      "Serve immediately with extra Parmesan and black pepper on top."
+    ]
+  }
+]
