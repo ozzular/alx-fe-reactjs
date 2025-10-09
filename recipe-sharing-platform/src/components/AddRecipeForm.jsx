@@ -87,17 +87,17 @@ const AddRecipeForm = () => {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
-          className="inline-block mb-6 text-blue-600 hover:text-blue-800 font-semibold"
+          className="inline-block mb-6 text-blue-600 hover:text-blue-800 font-semibold text-sm md:text-base"
         >
           ← Back to Recipes
         </Link>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+        <div className="bg-white rounded-lg shadow-lg p-4 md:p-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">
             Add New Recipe
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                 Recipe Title *
@@ -193,11 +193,11 @@ const AddRecipeForm = () => {
               />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 ${
+                className={`w-full md:flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 ${
                   isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
@@ -206,7 +206,7 @@ const AddRecipeForm = () => {
 
               <Link
                 to="/"
-                className="flex-1 text-center bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors duration-200"
+                className="w-full md:flex-1 text-center bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors duration-200"
               >
                 Cancel
               </Link>
