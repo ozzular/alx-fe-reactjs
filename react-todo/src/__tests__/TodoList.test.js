@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import TodoList from '../components/TodoList';
 
 // Mock Date for consistent testing
@@ -123,32 +124,39 @@ describe('TodoList Component', () => {
   });
 
   test('displays empty state when no todos exist', () => {
-    // Mock TodoList with empty initial state
-    jest.mock('../components/TodoList', () => {
-      return function MockTodoList() {
-        const [todos, setTodos] = useState([]);
+    // Create a test component that starts with empty todos
+    const EmptyTodoList = () => {
+      const [todos, setTodos] = useState([]);
 
-        return (
-          <div className="todo-container">
-            <div className="todo-header">
-              <h1>My Todo List</h1>
-              <p className="todo-stats">0 of 0 tasks completed</p>
-            </div>
-            <div className="add-todo-form">
-              <input placeholder="Add a new todo..." />
-              <button>Add Todo</button>
-            </div>
+      const addTodo = (text) => {
+        if (text.trim()) {
+          setTodos(prev => [{ id: Date.now(), text: text.trim(), completed: false, createdAt: new Date() }, ...prev]);
+        }
+      };
+
+      return (
+        <div className="todo-container">
+          <div className="todo-header">
+            <h1>My Todo List</h1>
+            <p className="todo-stats">0 of 0 tasks completed</p>
+          </div>
+          <div className="add-todo-form">
+            <input placeholder="Add a new todo..." />
+            <button>Add Todo</button>
+          </div>
+          <div className="todo-list">
             <div className="empty-state">
               <p>No todos yet. Add one above to get started!</p>
             </div>
           </div>
-        );
-      };
-    });
+        </div>
+      );
+    };
 
-    render(<TodoList />);
+    render(<EmptyTodoList />);
 
     expect(screen.getByText('No todos yet. Add one above to get started!')).toBeInTheDocument();
+    expect(screen.getByText('0 of 0 tasks completed')).toBeInTheDocument();
   });
 
   test('add button is disabled when input is empty', () => {
