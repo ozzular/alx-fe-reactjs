@@ -44,9 +44,9 @@ const blogPosts = [
 ];
 
 function BlogPost() {
-  const { postId } = useParams();
+  const { id } = useParams();
 
-  const post = blogPosts.find(post => post.id === parseInt(postId));
+  const post = blogPosts.find(post => post.id === parseInt(id));
 
   if (!post) {
     return (
