@@ -39,6 +39,7 @@ function AddTodoForm({ onAddTodo }) {
           type="submit"
           disabled={!text.trim()}
           className="add-button"
+          aria-label="Add todo"
         >
           Add Todo
         </button>

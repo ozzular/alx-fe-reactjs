@@ -1,1 +1,1 @@
-\"fix: resolve checker issues\"  
+\"fix: simplify TodoList tests\"  
